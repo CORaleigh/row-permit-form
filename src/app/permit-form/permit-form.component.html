@@ -1,0 +1,61 @@
+<form class="example-form" [formGroup]="permitForm" novalidate>
+  <app-esri-map (located)="locationSet($event)"></app-esri-map>
+  <div *ngFor="let field of fields">
+    <mat-form-field *ngIf="field.formType === 'select'" class="form-group example-full-width">
+      <mat-select [placeholder]="field.alias" [formControlName]="field.name">
+        <mat-option *ngFor="let codedValue of field.domain.codedValues" value="{{codedValue.code}}">{{codedValue.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div *ngIf="field.formType === 'radio'">
+      <h3 class="mat-h3" mat-subheader>{{field.alias}}</h3>
+      <mat-radio-group [formControlName]="field.name">
+        <mat-radio-button class="example-radio-button example-full-width" *ngFor="let codedValue of field.domain.codedValues" [value]="codedValue.code">
+          {{codedValue.name}}
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <mat-form-field *ngIf="field.formType == 'email'" class="form-group example-full-width">
+      <input matInput type="email" [placeholder]="field.alias" value="" [formControlName]="field.name" [maxlength]="field.length">
+    </mat-form-field>
+    <mat-form-field *ngIf="field.formType == 'input'" class="form-group example-full-width">
+      <input matInput type="text" [placeholder]="field.alias" value="" [formControlName]="field.name" [maxlength]="field.length">
+    </mat-form-field>
+    <mat-form-field *ngIf="field.formType == 'textarea'" class="form-group example-full-width">
+      <textarea matInput type="{{field.texttype}}" [placeholder]="field.alias" value="" [formControlName]="field.name"  [maxlength]="field.length"></textarea>
+    </mat-form-field>
+    <mat-form-field *ngIf="field.formType == 'date'">
+      <input matInput [matDatepicker]="picker" [placeholder]="field.alias" [formControlName]="field.name" [min]="getMinDate(field.name)">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('email', field.name)&& permitForm.controls[field.name].touched">
+      Not an acceptable email format
+    </mat-error>
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('required', field.name) && permitForm.controls[field.name].touched">
+      Field is required
+    </mat-error>
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('pattern', field.name) && permitForm.controls[field.name].touched">
+      Phone number must be in the following format: XXX-XXX-XXXX
+    </mat-error>    
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('matDatepickerMin', field.name) && permitForm.controls[field.name].touched">
+        End date must be AFTER the start date
+      </mat-error>        
+  </div>
+  <input #fileInput id="fileInput" name="file" type="file" class="fileInput" multiple (change)="fileAdded($event)">
+  <div>
+    <button mat-raised-button color="primary" type="file" (click)="fileInput.click()" [disabled]="file">Attach PDF</button>
+    <div *ngIf="file" class="mat-body-1">
+    {{file?.name}} ({{file?.size/1000000 | number}}mb)
+    <button mat-icon-button (click)="clearAttachment()">
+        <mat-icon aria-label="Remove PDF">clear</mat-icon>
+      </button>    
+    </div>
+  </div>
+  <div>
+    <button mat-raised-button color="primary" type="submit" (click)="submitForm()" [disabled]="!permitForm.valid || !location">SUBMIT</button>
+  </div>
+  <div>
+      <button mat-raised-button color="accent"  (click)="clearForm()">RESET</button>
+    </div>
+</form>
