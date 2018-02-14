@@ -43,9 +43,29 @@ export class PermitFormComponent implements AfterViewInit {
   public location: any = null;
   public minDate: Date = new Date();
   public minEndDate: Date = new Date();
-  public fieldOrder: Array < string > = [
-    'WORK_CATEGORY', 'COMPANY', 'OTHER_COMPANY', 'DEPARTMENT', 'CONTACT', 'CONTACT_EMAIL', 'SECONDARY_EMAIL', 'CONTACT_PHONE', 'WORK_TYPE', 'STARTDATE', 'ENDDATE', 'DAY_WORK', 'NIGHT_WORK', 'WEEKEND_WORK', 'FULL_CLOSURE', 'PARTIAL_CLOSURE', 'PARKING_CLOSURE', 'SIDEWALK_CLOSURE', 'COMMENTS'
-  ];
+  public fieldOrder: Array < string > = ['ENTITY_TYPE',
+'COMPANY_NAME',
+'COMPANY_OTHER',
+'WORK_TYPE',
+'WORK_TYPE_OTHER',
+'CONTACT_NAME',
+'CONTACT_PHONE',
+'CONTACT_EMAIL',
+'SECONDARY_EMAIL',
+'STARTDATE',
+'ENDDATE',
+'DAY_WORK',
+'NIGHT_WORK',
+'WEEKEND_WORK',
+'FULL_CLOSURE',
+'PARTIAL_CLOSURE',
+'SIDEWALK_CLOSURE',
+'PARKING_CLOSURE',
+'PARKING_SPACES',
+'DETAILS',
+'AGREED',
+'SIGNATURE',
+'SIGNED_DATE'];
   public permitForm: FormGroup;
 
   constructor(public fb: FormBuilder, public attachment: AttachmentsService, public snackBar: MatSnackBar) {
@@ -62,31 +82,38 @@ export class PermitFormComponent implements AfterViewInit {
 
   buildForm() {
     this.permitForm = this.fb.group({
-      'WORK_CATEGORY': new FormControl('', Validators.compose([Validators.required])),
-      'COMPANY': new FormControl('', Validators.compose([Validators.required])),
-      'OTHER_COMPANY': new FormControl({
+      'ENTITY_TYPE': new FormControl('', Validators.compose([Validators.required])),
+      'COMPANY_NAME': new FormControl('', Validators.compose([Validators.required])),
+      'COMPANY_OTHER': new FormControl({
         value: '',
         disabled: true
       }, Validators.compose([Validators.required])),
-      'DEPARTMENT': new FormControl({
-        value: '',
-        disabled: true
-      }, Validators.compose([Validators.required])),
-      'CONTACT': new FormControl('', Validators.compose([Validators.required])),
+      'CONTACT_NAME': new FormControl('', Validators.compose([Validators.required])),
       'CONTACT_PHONE': new FormControl('', Validators.compose([Validators.required, Validators.pattern(/\d{3}-\d{3}-\d{4}/g)])),
       'WORK_TYPE': new FormControl('', Validators.compose([Validators.required])),
+      'WORK_TYPE_OTHER': new FormControl({
+        value: '',
+        disabled: true
+      }, Validators.compose([Validators.required])),      
       'STARTDATE': new FormControl('', Validators.compose([Validators.required])),
       'ENDDATE': new FormControl('', Validators.compose([Validators.required])),
-      'DAY_WORK': new FormControl('', Validators.compose([Validators.required])),
-      'NIGHT_WORK': new FormControl('', Validators.compose([Validators.required])),
-      'WEEKEND_WORK': new FormControl('', Validators.compose([Validators.required])),
+      'DAY_WORK': new FormControl('', Validators.compose([])),
+      'NIGHT_WORK': new FormControl('', Validators.compose([])),
+      'WEEKEND_WORK': new FormControl('', Validators.compose([])),
       'FULL_CLOSURE': new FormControl('', Validators.compose([Validators.required])),
       'PARTIAL_CLOSURE': new FormControl('', Validators.compose([Validators.required])),
       'PARKING_CLOSURE': new FormControl('', Validators.compose([Validators.required])),
+      'PARKING_SPACES': new FormControl(
+        {value: '',
+        disabled: true
+       }, Validators.compose([Validators.required])),  
       'SIDEWALK_CLOSURE': new FormControl('', Validators.compose([Validators.required])),
-      'COMMENTS': new FormControl('', Validators.compose([Validators.required])),
+      'DETAILS': new FormControl('', Validators.compose([Validators.required])),
       'CONTACT_EMAIL': new FormControl('', Validators.compose([Validators.required, emailOrEmpty])),
       'SECONDARY_EMAIL': new FormControl('', emailOrEmpty),
+      'SIGNATURE': new FormControl('', Validators.compose([Validators.required])),
+      'AGREED': new FormControl('',  Validators.compose([Validators.required])),
+      'SIGNED_DATE': new FormControl('',  Validators.compose([Validators.required])),      
     });
     this.permitForm.controls.STARTDATE.valueChanges.subscribe(e=> {
       if (e === '') {
@@ -99,26 +126,28 @@ export class PermitFormComponent implements AfterViewInit {
       return control.value === '' ? null : Validators.email(control);
     }
 
-    this.permitForm.controls.WORK_CATEGORY.valueChanges.subscribe(e => {
-      if (e === 'City of Raleigh Improvement Project') {
-        this.permitForm.controls.COMPANY.setValue('City of Raleigh');
+
+    this.permitForm.controls.COMPANY_NAME.valueChanges.subscribe(e => {
+      if (e === 'Other') {
+        this.permitForm.controls.COMPANY_OTHER.enable();
+        this.permitForm.controls.COMPANY_OTHER.setValue('');
       } else {
-        this.permitForm.controls.COMPANY.setValue('');
+        this.permitForm.controls.COMPANY_OTHER.disable();
       }
     });
-    this.permitForm.controls.COMPANY.valueChanges.subscribe(e => {
-      if (e === 'City of Raleigh') {
-        this.permitForm.controls.DEPARTMENT.enable();
-        this.permitForm.controls.DEPARTMENT.setValue('');
-      } else {
-        this.permitForm.controls.DEPARTMENT.disable();
-        this.permitForm.controls.DEPARTMENT.setValue('');
-      }
+    this.permitForm.controls.WORK_TYPE.valueChanges.subscribe(e => {
       if (e === 'Other') {
-        this.permitForm.controls.OTHER_COMPANY.enable();
-        this.permitForm.controls.OTHER_COMPANY.setValue('');
+        this.permitForm.controls.WORK_TYPE_OTHER.enable();
+        this.permitForm.controls.WORK_TYPE_OTHER.setValue('');
       } else {
-        this.permitForm.controls.OTHER_COMPANY.disable();
+        this.permitForm.controls.WORK_TYPE_OTHER.disable();
+      }
+    });    
+    this.permitForm.controls.PARKING_CLOSURE.valueChanges.subscribe(e => {
+      if (e === 'Yes') {
+        this.permitForm.controls.PARKING_SPACES.enable();
+      } else {
+        this.permitForm.controls.PARKING_SPACES.disable();
       }
     });
   }
@@ -157,6 +186,27 @@ export class PermitFormComponent implements AfterViewInit {
       .then(([Graphic]) => {
         let graphic = new Graphic();
         graphic.attributes = this.permitForm.value;
+        if (graphic.attributes.DAY_WORK === true) {
+          graphic.attributes.DAY_WORK = 'Yes';
+        } else {
+          graphic.attributes.DAY_WORK = 'No';
+        }
+        if (graphic.attributes.NIGHT_WORK === true) {
+          graphic.attributes.NIGHT_WORK = 'Yes';
+        } else {
+          graphic.attributes.NIGHT_WORK = 'No';
+        }
+        if (graphic.attributes.WEEKEND_WORK === true) {
+          graphic.attributes.WEEKEND_WORK = 'Yes';
+        } else {
+          graphic.attributes.WEEKEND_WORK = 'No';
+        }                
+        if (graphic.attributes.AGREED === true) {
+          graphic.attributes.AGREED = 'Yes';
+        } else {
+          graphic.attributes.AGREED = 'No';
+        }               
+        debugger
         graphic.attributes.APPROVE = 'No';
         graphic.attributes.ASSIGNED = 'No';
         graphic.attributes.FORM = 'Yes';
@@ -182,6 +232,7 @@ export class PermitFormComponent implements AfterViewInit {
   }
 
   clearForm() {
+    debugger
     this.permitForm.reset();
     this.permitForm.updateValueAndValidity()
     this.map.search.clear();
@@ -210,10 +261,15 @@ export class PermitFormComponent implements AfterViewInit {
             return 0;
           });
           layer.fields.forEach(field => {
-            if (this.fieldOrder.indexOf(field.name) > -1) {
+    
+           if (field.editable && this.fieldOrder.indexOf(field.name) > -1) {
               if (field.domain) {
                 if (field.domain.name === 'YES_NO') {
-                  field.formType = 'radio';
+                  if (['AGREED', 'DAY_WORK', 'NIGHT_WORK', 'WEEKEND_WORK'].indexOf(field.name) > -1) {
+                    field.formType = 'checkbox';
+                  } else {
+                    field.formType = 'radio';
+                  }
                 } else {
                   field.formType = 'select';
                 }

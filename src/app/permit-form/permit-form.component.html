@@ -14,6 +14,17 @@
         </mat-radio-button>
       </mat-radio-group>
     </div>
+    <div *ngIf="field.formType === 'checkbox' && field.name == 'AGREED'">
+      <h3 class="mat-h3" mat-subheader>{{field.alias}}</h3>
+      <mat-checkbox [formControlName]="field.name">I Agree</mat-checkbox>
+    </div>  
+ 
+    <section *ngIf="field.formType === 'checkbox' && ['DAY_WORK'].indexOf(field.name) > -1">
+      <h3 class="mat-h3" mat-subheader>Times Requested</h3>
+      <mat-checkbox formControlName="DAY_WORK"  class="example-margin">Day</mat-checkbox>
+      <mat-checkbox formControlName="NIGHT_WORK" class="example-margin">Nights</mat-checkbox>
+      <mat-checkbox formControlName="WEEKEND_WORK" class="example-margin">Weekends</mat-checkbox>      
+    </section>          
     <mat-form-field *ngIf="field.formType == 'email'" class="form-group example-full-width">
       <input matInput type="email" [placeholder]="field.alias" value="" [formControlName]="field.name" [maxlength]="field.length">
     </mat-form-field>
