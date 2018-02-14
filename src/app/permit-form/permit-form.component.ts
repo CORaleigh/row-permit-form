@@ -98,12 +98,21 @@ export class PermitFormComponent implements AfterViewInit {
     function emailOrEmpty(control: AbstractControl): ValidationErrors | null {
       return control.value === '' ? null : Validators.email(control);
     }
+
+    this.permitForm.controls.WORK_CATEGORY.valueChanges.subscribe(e => {
+      if (e === 'City of Raleigh Improvement Project') {
+        this.permitForm.controls.COMPANY.setValue('City of Raleigh');
+      } else {
+        this.permitForm.controls.COMPANY.setValue('');
+      }
+    });
     this.permitForm.controls.COMPANY.valueChanges.subscribe(e => {
       if (e === 'City of Raleigh') {
         this.permitForm.controls.DEPARTMENT.enable();
         this.permitForm.controls.DEPARTMENT.setValue('');
       } else {
         this.permitForm.controls.DEPARTMENT.disable();
+        this.permitForm.controls.DEPARTMENT.setValue('');
       }
       if (e === 'Other') {
         this.permitForm.controls.OTHER_COMPANY.enable();
@@ -153,7 +162,7 @@ export class PermitFormComponent implements AfterViewInit {
         graphic.attributes.FORM = 'Yes';
         graphic.attributes.ADDRESS = this.map.search.results[0].results[0].feature.attributes.Match_addr
         graphic.geometry = this.map.search.results[0].results[0].feature.geometry;
-        this.featureLayer.applyEdits({
+        let promise = this.featureLayer.applyEdits({
           addFeatures: [graphic]
         }).then(results => {
           if (results.addFeatureResults[0].objectId) {
@@ -182,7 +191,6 @@ export class PermitFormComponent implements AfterViewInit {
   }
 
   locationSet(event) {
-    debugger
     this.location = event.results[0].feature;
   }
 
@@ -190,7 +198,8 @@ export class PermitFormComponent implements AfterViewInit {
     return loadModules(['esri/layers/FeatureLayer'])
       .then(([FeatureLayer]) => {
         this.featureLayer = new FeatureLayer("https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Right_Of_Way_Permit_Submittal/FeatureServer/0");
-        this.featureLayer.load().then(layer => {
+        this.featureLayer.load();
+        this.featureLayer.when(layer => {
           layer.fields.sort((a, b) => {
             if (this.fieldOrder.indexOf(a.name) < this.fieldOrder.indexOf(b.name)) {
               return -1;
