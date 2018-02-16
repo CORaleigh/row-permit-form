@@ -240,7 +240,7 @@ export class PermitFormComponent implements OnInit {
             }
           }
         });      
-        graphic.attributes.APPROVE = 'No';
+        graphic.attributes.APPROVED = 'No';
         graphic.attributes.ASSIGNED = 'No';
         graphic.attributes.FORM = 'Yes';
         graphic.attributes.ADDRESS = this.map.search.results[0].results[0].feature.attributes.Match_addr
