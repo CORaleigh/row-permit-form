@@ -1,8 +1,8 @@
-<form class="example-form" [formGroup]="permitForm" novalidate>
+<form class="example-form" [formGroup]="permitForm" novalidate #f="ngForm">
   <app-esri-map (located)="locationSet($event)"></app-esri-map>
   <div *ngFor="let field of fields">
     <mat-form-field *ngIf="field.formType === 'select'" class="form-group example-full-width">
-      <mat-select [placeholder]="field.alias" [formControlName]="field.name">
+      <mat-select [placeholder]="field.alias" [formControlName]="field.name" >
         <mat-option *ngFor="let codedValue of field.domain.codedValues" value="{{codedValue.code}}">{{codedValue.name}}</mat-option>
       </mat-select>
     </mat-form-field>
@@ -14,48 +14,87 @@
         </mat-radio-button>
       </mat-radio-group>
     </div>
-    <div *ngIf="field.formType === 'checkbox' && field.name == 'AGREED'">
-      <h3 class="mat-h3" mat-subheader>{{field.alias}}</h3>
+    <div *ngIf="field.formType === 'checkbox' && ['AGREED'].indexOf(field.name) > -1">
+      <!--<h3 class="mat-h3" mat-subheader>{{field.alias}}</h3>-->
+      <div class="mat-body">By Signing the application I agree to the conditions:
+      <ul><li>I have read and understand the City of Raleigh Right of Way Provisions and will comply therewith. Noncompliance can result in fines or termination of permits</li>
+      <li>I understand that non-compliance with the City of Raleigh Right-of-Way Provisions or any applicable laws and regulations may result in the assessment of civil penalties and could potentially affect permits, inspections, plan approvals and/or continued work for this project, including the issuance of Stop Work orders.</li>
+      <li>I understand that as the Applicant, I will be responsible for any assessed civil penalties, fees or fines.</li>
+      <li>I understand it is unlawful, and a violation of the Raleigh City Code, to give false information or misrepresentations in any application or permit required by the Code.  Failure to provide full disclosure of requested information may be grounds for denial or revocation of a Right of Way Services Permit.</li>
+      <li>All Street, Lane and Sidewalk Closures and Detours will be in compliance with PROWAG, ADA , and MUTCD requirements.</li>
+      <li>All fees must be paid prior to plan review and permit approval where applicable </li></ul></div>
+      
       <mat-checkbox [formControlName]="field.name">I Agree</mat-checkbox>
     </div>  
  
-    <section *ngIf="field.formType === 'checkbox' && ['DAY_WORK'].indexOf(field.name) > -1">
-      <h3 class="mat-h3" mat-subheader>Times Requested</h3>
+    <section *ngIf="field.formType === 'checkbox' && ['DAY_WORK'].indexOf(field.name) > -1" [formGroup]="permitForm.controls.REQUESTED_TIME" >
+      <h3 class="mat-h3" mat-subheader>Times Requested (Select at least one)</h3>
       <mat-checkbox formControlName="DAY_WORK"  class="example-margin">Day</mat-checkbox>
       <mat-checkbox formControlName="NIGHT_WORK" class="example-margin">Nights</mat-checkbox>
       <mat-checkbox formControlName="WEEKEND_WORK" class="example-margin">Weekends</mat-checkbox>      
     </section>          
+    <section *ngIf="field.formType === 'checkbox' && ['FULL_CLOSURE'].indexOf(field.name) > -1" [formGroup]="permitForm.controls.LANE_CLOSURE">
+      <h3 class="mat-h3" mat-subheader>Lane Closure Types (Select at least one)</h3>
+      <mat-checkbox formControlName="FULL_CLOSURE"  class="example-margin">Full street closure</mat-checkbox>
+      <mat-checkbox formControlName="PARTIAL_CLOSURE" class="example-margin">Partial lane closure</mat-checkbox>
+    </section>        
+    <section *ngIf="field.formType === 'checkbox' && ['SIDEWALK_CLOSURE'].indexOf(field.name) > -1"  [formGroup]="permitForm.controls.OTHER_CLOSURE">
+      <h3 class="mat-h3" mat-subheader>Other Closure Types</h3>
+      <mat-checkbox formControlName="SIDEWALK_CLOSURE"  class="example-margin">Sidewalk closure</mat-checkbox>
+      <mat-checkbox formControlName="PARKING_CLOSURE" class="example-margin">Metered or timed parking space closure</mat-checkbox>
+    </section>    
     <mat-form-field *ngIf="field.formType == 'email'" class="form-group example-full-width">
       <input matInput type="email" [placeholder]="field.alias" value="" [formControlName]="field.name" [maxlength]="field.length">
+      <mat-hint align="start">user@domain.com</mat-hint>         
+      <mat-hint align="end">{{permitForm.controls[field.name].value ?permitForm.controls[field.name].value.length: 0}} / {{field.length}}</mat-hint>      
     </mat-form-field>
     <mat-form-field *ngIf="field.formType == 'input'" class="form-group example-full-width">
       <input matInput type="text" [placeholder]="field.alias" value="" [formControlName]="field.name" [maxlength]="field.length">
+      <mat-hint align="start" *ngIf="field.name.indexOf('PHONE') > -1">XXX-XXX-XXXX</mat-hint>   
+      <mat-hint align="start" *ngIf="field.name.indexOf('SPACES') > -1">If range of spots, specify as 300-310 and comma deliminate if additional</mat-hint>         
+      <mat-hint align="end">{{permitForm.controls[field.name].value ?permitForm.controls[field.name].value.length: 0}} / {{field.length}}</mat-hint>      
     </mat-form-field>
     <mat-form-field *ngIf="field.formType == 'textarea'" class="form-group example-full-width">
       <textarea matInput type="{{field.texttype}}" [placeholder]="field.alias" value="" [formControlName]="field.name"  [maxlength]="field.length"></textarea>
+      <mat-hint align="end">{{permitForm.controls[field.name].value ?permitForm.controls[field.name].value.length: 0}} / {{field.length}}</mat-hint>      
+
     </mat-form-field>
     <mat-form-field *ngIf="field.formType == 'date'">
-      <input matInput [matDatepicker]="picker" [placeholder]="field.alias" [formControlName]="field.name" [min]="getMinDate(field.name)">
+      <input matInput [matDatepicker]="picker" [placeholder]="field.alias" [formControlName]="field.name" [min]="getMinDate(field.name)" readonly (click)="picker.open()">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <mat-error class="mat-caption" *ngIf="permitForm.hasError('email', field.name)&& permitForm.controls[field.name].touched">
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('email', field.name)&& (permitForm.controls[field.name].touched || this.submitTouched)">
       Not an acceptable email format
     </mat-error>
-    <mat-error class="mat-caption" *ngIf="permitForm.hasError('required', field.name) && permitForm.controls[field.name].touched">
+
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('required', field.name) && (permitForm.controls[field.name].touched || this.submitTouched) && field.name !== 'AGREED'">
       Field is required
-    </mat-error>
-    <mat-error class="mat-caption" *ngIf="permitForm.hasError('pattern', field.name) && permitForm.controls[field.name].touched">
+    </mat-error>   
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('required', field.name) && (permitForm.controls[field.name].touched  || this.submitTouched)  && field.name === 'AGREED'">
+      You must agree to the listed conditions
+    </mat-error>        
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('pattern', field.name) && (permitForm.controls[field.name].touched  || this.submitTouched)">
       Phone number must be in the following format: XXX-XXX-XXXX
     </mat-error>    
-    <mat-error class="mat-caption" *ngIf="permitForm.hasError('matDatepickerMin', field.name) && permitForm.controls[field.name].touched">
+    <mat-error class="mat-caption" *ngIf="permitForm.hasError('matDatepickerMin', field.name) && (permitForm.controls[field.name].touched || this.submitTouched)">
         End date must be AFTER the start date
-      </mat-error>        
+      </mat-error>
+ 
+    <mat-error class="mat-caption" *ngIf="field.name === 'WEEKEND_WORK' && !permitForm.controls.REQUESTED_TIME.valid && (permitForm.controls.REQUESTED_TIME.touched || this.submitTouched)">
+      At least one time must be selected
+    </mat-error>     
+    <mat-error class="mat-caption" *ngIf="field.name === 'PARTIAL_CLOSURE' && !permitForm.controls.LANE_CLOSURE.valid && (permitForm.controls.LANE_CLOSURE.touched || this.submitTouched)">
+      At least one lane closure type must be selected
+    </mat-error>     
+
+    <a class="mat-body" *ngIf="location && field.name === 'PARKING_SPACES' && permitForm.controls.OTHER_CLOSURE.controls.PARKING_CLOSURE.value" href="http://ral.maps.arcgis.com/apps/webappviewer/index.html?id=6d14ad6014c04e7a9ffb765afa50785a&level=18&marker={{location.geometry.longitude}},{{location.geometry.latitude}}" target="_blank">Find Space Numbers</a>
+    <div class="mat-body" *ngIf="!location && field.name === 'PARKING_SPACES' && permitForm.controls.OTHER_CLOSURE.controls.PARKING_CLOSURE.value" >Set location on above map for link to parking map</div>        
   </div>
   <input #fileInput id="fileInput" name="file" type="file" class="fileInput" multiple (change)="fileAdded($event)">
   <div>
-    <button mat-raised-button color="primary" type="file" (click)="fileInput.click()" [disabled]="file">Attach PDF</button>
+    <button mat-raised-button color="primary" type="button" (click)="fileInput.click()" [disabled]="file">Attach PDF</button>
     <div *ngIf="file" class="mat-body-1">
     {{file?.name}} ({{file?.size/1000000 | number}}mb)
     <button mat-icon-button (click)="clearAttachment()">
@@ -64,9 +103,15 @@
     </div>
   </div>
   <div>
-    <button mat-raised-button color="primary" type="submit" (click)="submitForm()" [disabled]="!permitForm.valid || !location">SUBMIT</button>
+    <button  mat-raised-button color="primary" type="submit" (click)="submitForm()" value="false">SUBMIT</button>
+    <mat-error class="mat-caption" *ngIf="this.permitForm.invalid && this.submitTouched">
+      Please review the errors above, some fields are required or not entered correctly
+    </mat-error>        
+    <mat-error class="mat-caption" *ngIf="!this.location && this.submitTouched">
+      No location has been set on the map
+    </mat-error>        
   </div>
   <div>
-      <button mat-raised-button color="accent"  (click)="clearForm()">RESET</button>
+      <button #resetButton mat-raised-button color="accent"  (click)="clearForm()" type="reset">RESET</button>
     </div>
 </form>

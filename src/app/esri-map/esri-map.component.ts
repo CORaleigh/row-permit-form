@@ -30,7 +30,7 @@ export class EsriMapComponent implements OnInit {
           map // property shorthand for object literal
         };
   
-        this.mapView = new MapView(mapViewProperties);      
+        this.mapView = new MapView(mapViewProperties); 
         this.mapView.on('click', event => {
           this.search.search(event.mapPoint);
         });

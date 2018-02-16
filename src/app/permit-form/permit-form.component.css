@@ -32,3 +32,19 @@ app-esri-map {
 .mat-raised-button {
  margin-bottom: 1em;
 }
+
+section {
+  margin-bottom: 1em;
+}
+
+.mat-error {
+    margin-bottom: 1em;
+}
+
+.mat-checkbox {
+    margin-right: 1em;
+}
+
+.mat-form-field-should-float {
+    margin-top: 1em;
+}
