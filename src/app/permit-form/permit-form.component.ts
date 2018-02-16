@@ -2,8 +2,7 @@ import {
   Component,
   OnInit,
   ElementRef,
-  ViewChild,
-  AfterViewInit
+  ViewChild
 } from '@angular/core';
 import {
   FormControl,
@@ -33,7 +32,7 @@ import {
   templateUrl: './permit-form.component.html',
   styleUrls: ['./permit-form.component.css']
 })
-export class PermitFormComponent implements AfterViewInit {
+export class PermitFormComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('resetButton') resetButton: MatButton;
 
@@ -241,7 +240,6 @@ export class PermitFormComponent implements AfterViewInit {
             }
           }
         });      
-        debugger
         graphic.attributes.APPROVE = 'No';
         graphic.attributes.ASSIGNED = 'No';
         graphic.attributes.FORM = 'Yes';
@@ -282,7 +280,7 @@ export class PermitFormComponent implements AfterViewInit {
     this.location = event.results[0].feature;
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     return loadModules(['esri/layers/FeatureLayer'])
       .then(([FeatureLayer]) => {
         this.featureLayer = new FeatureLayer("https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Right_Of_Way_Permit_Submittal/FeatureServer/0");
