@@ -107,11 +107,9 @@ export class PermitFormComponent implements OnInit {
       'LANE_CLOSURE': this.fb.group({
         'FULL_CLOSURE': new FormControl(false, Validators.compose([])),
         'PARTIAL_CLOSURE': new FormControl(false, Validators.compose([])),
-      }, {validator: laneClosureValidator}),      
-      'OTHER_CLOSURE': this.fb.group({
         'SIDEWALK_CLOSURE': new FormControl(false, Validators.compose([])),
-        'PARKING_CLOSURE': new FormControl(false, Validators.compose([])),
-      }),      
+        'PARKING_CLOSURE': new FormControl(false, Validators.compose([]))      
+      }, {validator: laneClosureValidator}),    
       'PARKING_SPACES': new FormControl(
         {value: null,
         disabled: true
@@ -136,7 +134,7 @@ export class PermitFormComponent implements OnInit {
     }
   
     function laneClosureValidator(group: FormGroup): ValidationErrors | null {
-      let value = (group.controls.FULL_CLOSURE.value === true || group.controls.PARTIAL_CLOSURE.value === true);
+      let value = (group.controls.FULL_CLOSURE.value === true || group.controls.PARTIAL_CLOSURE.value === true || group.controls.SIDEWALK_CLOSURE.value === true || group.controls.PARKING_CLOSURE.value === true);
       let error =  null
       if (value !== true) {
         error = Validators.email(group);
@@ -170,7 +168,7 @@ export class PermitFormComponent implements OnInit {
         this.permitForm.controls.WORK_TYPE_OTHER.disable();
       }
     });    
-    let group: FormGroup = this.permitForm.controls.OTHER_CLOSURE as FormGroup;
+    let group: FormGroup = this.permitForm.controls.LANE_CLOSURE as FormGroup;
     group.controls.PARKING_CLOSURE.valueChanges.subscribe(e => {
       if (e) {
         this.permitForm.controls.PARKING_SPACES.enable();
@@ -277,7 +275,12 @@ export class PermitFormComponent implements OnInit {
   }
 
   locationSet(event) {
-    this.location = event.results[0].feature;
+    if (event) {
+      this.location = event.results[0].feature;
+    } else {
+      this.location = null;
+    }
+    
   }
 
   ngOnInit() {

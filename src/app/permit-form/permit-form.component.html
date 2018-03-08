@@ -34,15 +34,17 @@
       <mat-checkbox formControlName="WEEKEND_WORK" class="example-margin">Weekends</mat-checkbox>      
     </section>          
     <section *ngIf="field.formType === 'checkbox' && ['FULL_CLOSURE'].indexOf(field.name) > -1" [formGroup]="permitForm.controls.LANE_CLOSURE">
-      <h3 class="mat-h3" mat-subheader>Lane Closure Types (Select at least one)</h3>
+      <h3 class="mat-h3" mat-subheader>Closure Types (Select at least one)</h3>
       <mat-checkbox formControlName="FULL_CLOSURE"  class="example-margin">Full street closure</mat-checkbox>
       <mat-checkbox formControlName="PARTIAL_CLOSURE" class="example-margin">Partial lane closure</mat-checkbox>
+      <mat-checkbox formControlName="SIDEWALK_CLOSURE"  class="example-margin">Sidewalk closure</mat-checkbox>
+      <mat-checkbox formControlName="PARKING_CLOSURE" class="example-margin">Metered or timed parking space closure</mat-checkbox>      
     </section>        
-    <section *ngIf="field.formType === 'checkbox' && ['SIDEWALK_CLOSURE'].indexOf(field.name) > -1"  [formGroup]="permitForm.controls.OTHER_CLOSURE">
+    <!-- <section *ngIf="field.formType === 'checkbox' && ['SIDEWALK_CLOSURE'].indexOf(field.name) > -1"  [formGroup]="permitForm.controls.OTHER_CLOSURE">
       <h3 class="mat-h3" mat-subheader>Other Closure Types</h3>
       <mat-checkbox formControlName="SIDEWALK_CLOSURE"  class="example-margin">Sidewalk closure</mat-checkbox>
       <mat-checkbox formControlName="PARKING_CLOSURE" class="example-margin">Metered or timed parking space closure</mat-checkbox>
-    </section>    
+    </section>     -->
     <mat-form-field *ngIf="field.formType == 'email'" class="form-group example-full-width">
       <input matInput type="email" [placeholder]="field.alias" value="" [formControlName]="field.name" [maxlength]="field.length">
       <mat-hint align="start">user@domain.com</mat-hint>         
@@ -85,12 +87,12 @@
     <mat-error class="mat-caption" *ngIf="field.name === 'WEEKEND_WORK' && !permitForm.controls.REQUESTED_TIME.valid && (permitForm.controls.REQUESTED_TIME.touched || this.submitTouched)">
       At least one time must be selected
     </mat-error>     
-    <mat-error class="mat-caption" *ngIf="field.name === 'PARTIAL_CLOSURE' && !permitForm.controls.LANE_CLOSURE.valid && (permitForm.controls.LANE_CLOSURE.touched || this.submitTouched)">
+    <mat-error class="mat-caption" *ngIf="field.name === 'PARKING_CLOSURE' && !permitForm.controls.LANE_CLOSURE.valid && (permitForm.controls.LANE_CLOSURE.touched || this.submitTouched)">
       At least one lane closure type must be selected
     </mat-error>     
 
-    <a class="mat-body" *ngIf="location && field.name === 'PARKING_SPACES' && permitForm.controls.OTHER_CLOSURE.controls.PARKING_CLOSURE.value" href="http://ral.maps.arcgis.com/apps/webappviewer/index.html?id=6d14ad6014c04e7a9ffb765afa50785a&level=18&marker={{location.geometry.longitude}},{{location.geometry.latitude}}" target="_blank">Find Space Numbers</a>
-    <div class="mat-body" *ngIf="!location && field.name === 'PARKING_SPACES' && permitForm.controls.OTHER_CLOSURE.controls.PARKING_CLOSURE.value" >Set location on above map for link to parking map</div>        
+    <a class="mat-body" *ngIf="location && field.name === 'PARKING_SPACES' && permitForm.controls.LANE_CLOSURE.controls.PARKING_CLOSURE.value" href="http://ral.maps.arcgis.com/apps/webappviewer/index.html?id=6d14ad6014c04e7a9ffb765afa50785a&level=18&marker={{location.geometry.longitude}},{{location.geometry.latitude}}" target="_blank">Find Space Numbers</a>
+    <div class="mat-body" *ngIf="!location && field.name === 'PARKING_SPACES' && permitForm.controls.LANE_CLOSURE.controls.PARKING_CLOSURE.value" >Set location on above map for link to parking map</div>        
   </div>
   <input #fileInput id="fileInput" name="file" type="file" class="fileInput" multiple (change)="fileAdded($event)">
   <div>
@@ -112,6 +114,6 @@
     </mat-error>        
   </div>
   <div>
-      <button #resetButton mat-raised-button color="accent"  (click)="clearForm()" type="reset">RESET</button>
+      <button #resetButton mat-raised-button color="warn"  (click)="clearForm()" type="reset">RESET</button>
     </div>
 </form>

@@ -1,0 +1,11 @@
+mat-toolbar-row {
+    height: 64px;
+    width: 100%;
+    white-space: normal !important;
+  }
+  
+  img {
+    max-width: 50px;
+    margin-right: 20px;
+  }
+  
