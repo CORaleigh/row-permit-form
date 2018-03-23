@@ -17,6 +17,7 @@ import {
 import {
   EsriMapComponent
 } from '../esri-map/esri-map.component';
+
 import {
   loadModules
 } from 'esri-loader';
@@ -52,6 +53,7 @@ export class PermitFormComponent implements OnInit {
 'WORK_TYPE_OTHER',
 'CONTACT_NAME',
 'CONTACT_PHONE',
+'CONTACT_SECONDARY_PHONE',
 'CONTACT_EMAIL',
 'SECONDARY_EMAIL',
 'STARTDATE',
@@ -92,6 +94,7 @@ export class PermitFormComponent implements OnInit {
       }, Validators.compose([Validators.required])),
       'CONTACT_NAME': new FormControl(null, Validators.compose([Validators.required])),
       'CONTACT_PHONE': new FormControl(null, Validators.compose([Validators.required, Validators.pattern(/\d{3}-\d{3}-\d{4}/g)])),
+      'CONTACT_SECONDARY_PHONE': new FormControl(null, Validators.compose([Validators.pattern(/\d{3}-\d{3}-\d{4}/g)])),      
       'WORK_TYPE': new FormControl(null, Validators.compose([Validators.required])),
       'WORK_TYPE_OTHER': new FormControl({
         value: null,
@@ -283,6 +286,7 @@ export class PermitFormComponent implements OnInit {
     
   }
 
+
   ngOnInit() {
     return loadModules(['esri/layers/FeatureLayer'])
       .then(([FeatureLayer]) => {
@@ -322,6 +326,7 @@ export class PermitFormComponent implements OnInit {
                   field.formType = 'input';
                 }
               }
+          
               if (field.name.indexOf('PHONE') > -1) {
                 field.length = 12;
               }

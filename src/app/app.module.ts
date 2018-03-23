@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCheckboxModule, MatSelectModule, MatOptionModule, MatDatepickerModule, MatNativeDateModule, MatToolbarModule, MatToolbar, MatSnackBarModule, MatIconModule, MatIcon} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatSelectModule, MatOptionModule, MatDatepickerModule, MatNativeDateModule, MatToolbarModule, MatToolbar, MatSnackBarModule, MatIconModule, MatIcon, MatDialogModule, MatCardModule} from '@angular/material';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -22,7 +22,7 @@ import { AttachmentsService } from './attachments.service';
   declarations: [
     AppComponent,
     EsriMapComponent,
-    PermitFormComponent,
+    PermitFormComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +41,9 @@ import { AttachmentsService } from './attachments.service';
     HttpClientModule,
     MatToolbarModule,
     MatSnackBarModule, 
-    MatIconModule
+    MatIconModule,
+    MatDialogModule,
+    MatCardModule
   ],
   providers: [{provide: LOCALE_ID, useValue: 'en-US'}, AttachmentsService],
   bootstrap: [AppComponent]

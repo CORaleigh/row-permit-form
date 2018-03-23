@@ -1,6 +1,27 @@
+
 <form class="example-form" [formGroup]="permitForm" novalidate #f="ngForm">
-  <app-esri-map (located)="locationSet($event)"></app-esri-map>
+  <h1 class="mat-headline">Right-of-Way Services Permit Application</h1>
+    <p class="mat-body">Any person that wishes to install or maintain assets and infrastructure, or occupy the right-of-way in the form of a street, lane, or sidewalk closure within Raleigh’s Jurisdiction must acquire a permit by submitting this form.</p>          
+    <p class="mat-body">
+        Before submitting this application, please make sure you are <strong>bonded</strong> and <strong>have a COI registered with the City of Raleigh</strong>.  Please see visit our 
+        <a href="https://www.raleighnc.gov/business/content/PlanDev/Articles/DevServ/RightOfWayPermits.html">website</a>
+        for more info.
+    </p>    
+
+    <h2 class="mat-title">1) Where will work occur?</h2>
+
+        <div class="mat-body">Search for an address or click on the map below to define the approximate work location.</div> 
+    
+        <app-esri-map (located)="locationSet($event)"></app-esri-map>          
+
+
   <div *ngFor="let field of fields">
+    <h2 class="mat-title" *ngIf="field.name === 'ENTITY_TYPE'">2) What work will be done?</h2>
+    <h2 class="mat-title" *ngIf="field.name === 'CONTACT_NAME'">3) Who is the onsite contact?</h2>    
+    <h2 class="mat-title" *ngIf="field.name === 'STARTDATE'">4) When will work occur?</h2>   
+    <h2 class="mat-title" *ngIf="field.name === 'FULL_CLOSURE'">5) What closures will be required?</h2>              
+    <h2 class="mat-title" *ngIf="field.name === 'DETAILS'">7) Additional details and attachment</h2>        
+    <h2 class="mat-title" *ngIf="field.name === 'AGREED'">8) Agree and submit application</h2>              
     <mat-form-field *ngIf="field.formType === 'select'" class="form-group example-full-width">
       <mat-select [placeholder]="field.alias" [formControlName]="field.name" >
         <mat-option *ngFor="let codedValue of field.domain.codedValues" value="{{codedValue.code}}">{{codedValue.name}}</mat-option>
@@ -17,12 +38,14 @@
     <div *ngIf="field.formType === 'checkbox' && ['AGREED'].indexOf(field.name) > -1">
       <!--<h3 class="mat-h3" mat-subheader>{{field.alias}}</h3>-->
       <div class="mat-body">By Signing the application I agree to the conditions:
-      <ul><li>I have read and understand the City of Raleigh Right of Way Provisions and will comply therewith. Noncompliance can result in fines or termination of permits</li>
+  
+      <ul>         
+        <li>I have read and understand the <a href="http://www.raleighnc.gov/content/PublicWorks/Documents/TransFieldSvcs/RightofWaySpecialProvisions.doc" target="_blank">City of Raleigh Right of Way Provisions</a> and will comply therewith. Noncompliance can result in fines or termination of permits</li>
       <li>I understand that non-compliance with the City of Raleigh Right-of-Way Provisions or any applicable laws and regulations may result in the assessment of civil penalties and could potentially affect permits, inspections, plan approvals and/or continued work for this project, including the issuance of Stop Work orders.</li>
       <li>I understand that as the Applicant, I will be responsible for any assessed civil penalties, fees or fines.</li>
       <li>I understand it is unlawful, and a violation of the Raleigh City Code, to give false information or misrepresentations in any application or permit required by the Code.  Failure to provide full disclosure of requested information may be grounds for denial or revocation of a Right of Way Services Permit.</li>
-      <li>All Street, Lane and Sidewalk Closures and Detours will be in compliance with PROWAG, ADA , and MUTCD requirements.</li>
-      <li>All fees must be paid prior to plan review and permit approval where applicable </li></ul></div>
+      <li>All Street, Lane and Sidewalk Closures and Detours will be in compliance with <a href="http://www.access-board.gov/guidelines-and-standards/streets-sidewalks/public-rights-of-way" target="_blank">PROWAG</a>, <a href="http://www.ada.gov/" target="_blank">ADA</a>, and <a href="http://mutcd.fhwa.dot.gov/" target="_blank">MUTCD</a> requirements.</li>
+      <li>All fees must be paid prior to plan review and permit approval where applicable.  Please see the <a href="http://www.raleighnc.gov/content/extra/Books/PlanDev/DevelopmentFeeSchedule/" target="_blank">Development Fee Schedule</a> for current fees.</li></ul></div>
       
       <mat-checkbox [formControlName]="field.name">I Agree</mat-checkbox>
     </div>  
@@ -66,6 +89,17 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+    <div *ngIf="field.name.indexOf('DETAILS') >  -1">
+        <button mat-raised-button color="primary" type="button" (click)="fileInput.click()" [disabled]="file">Attach PDF</button>
+        <div *ngIf="file" class="mat-body-1">
+        {{file?.name}} ({{file?.size/1000000 | number}}mb)
+        <button mat-icon-button (click)="clearAttachment()">
+            <mat-icon aria-label="Remove PDF">clear</mat-icon>
+          </button>    
+        </div>
+        <div class="mat-caption">*only one PDF can be submitted and must be under 10MB in size.</div>
+        
+      </div>    
 
     <mat-error class="mat-caption" *ngIf="permitForm.hasError('email', field.name)&& (permitForm.controls[field.name].touched || this.submitTouched)">
       Not an acceptable email format
@@ -95,15 +129,7 @@
     <div class="mat-body" *ngIf="!location && field.name === 'PARKING_SPACES' && permitForm.controls.LANE_CLOSURE.controls.PARKING_CLOSURE.value" >Set location on above map for link to parking map</div>        
   </div>
   <input #fileInput id="fileInput" name="file" type="file" class="fileInput" multiple (change)="fileAdded($event)">
-  <div>
-    <button mat-raised-button color="primary" type="button" (click)="fileInput.click()" [disabled]="file">Attach PDF</button>
-    <div *ngIf="file" class="mat-body-1">
-    {{file?.name}} ({{file?.size/1000000 | number}}mb)
-    <button mat-icon-button (click)="clearAttachment()">
-        <mat-icon aria-label="Remove PDF">clear</mat-icon>
-      </button>    
-    </div>
-  </div>
+
   <div>
     <button  mat-raised-button color="primary" type="submit" (click)="submitForm()" value="false">SUBMIT</button>
     <mat-error class="mat-caption" *ngIf="this.permitForm.invalid && this.submitTouched">
