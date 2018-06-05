@@ -69,6 +69,7 @@ export class PermitFormComponent implements OnInit {
 'DETAILS',
 'AGREED',
 'SIGNATURE',
+'SUBMIT_EMAIL',
 'SIGNED_DATE'];
   public permitForm: FormGroup;
 
@@ -120,9 +121,10 @@ export class PermitFormComponent implements OnInit {
       'DETAILS': new FormControl(null, Validators.compose([])),
       'CONTACT_EMAIL': new FormControl(null, Validators.compose([Validators.required, emailOrEmpty])),
       'SECONDARY_EMAIL': new FormControl(null, emailOrEmpty),
+      'SUBMIT_EMAIL': new FormControl(null, Validators.compose([Validators.required, emailOrEmpty])),      
       'SIGNATURE': new FormControl(null, Validators.compose([Validators.required])),
       'AGREED': new FormControl(false,  Validators.compose([Validators.requiredTrue])),
-      'SIGNED_DATE': new FormControl(null,  Validators.compose([Validators.required])),      
+      'SIGNED_DATE': new FormControl(null,  Validators.compose([Validators.required])),   
     });
 
     this.permitForm.controls.STARTDATE.valueChanges.subscribe(e=> {
@@ -286,7 +288,6 @@ export class PermitFormComponent implements OnInit {
     
   }
 
-
   ngOnInit() {
     return loadModules(['esri/layers/FeatureLayer'])
       .then(([FeatureLayer]) => {
@@ -337,4 +338,3 @@ export class PermitFormComponent implements OnInit {
       })
   }
 }
-
