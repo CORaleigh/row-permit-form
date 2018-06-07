@@ -7,16 +7,14 @@ import {MatInputModule} from '@angular/material/input';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
-
 import {MatFormFieldModule} from '@angular/material/form-field';
 
 import { EsriMapComponent } from './esri-map/esri-map.component';
 
-
 import { AppComponent } from './app.component';
 import { PermitFormComponent } from './permit-form/permit-form.component';
 import { AttachmentsService } from './attachments.service';
-
+import { MailService } from './mail.service';
 
 @NgModule({
   declarations: [
@@ -45,7 +43,7 @@ import { AttachmentsService } from './attachments.service';
     MatDialogModule,
     MatCardModule
   ],
-  providers: [{provide: LOCALE_ID, useValue: 'en-US'}, AttachmentsService],
+  providers: [{provide: LOCALE_ID, useValue: 'en-US'}, AttachmentsService, MailService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
