@@ -131,7 +131,7 @@
   <input #fileInput id="fileInput" name="file" type="file" class="fileInput" multiple (change)="fileAdded($event)">
 
   <div>
-    <button  mat-raised-button color="primary" type="submit" (click)="submitForm()" value="false">SUBMIT</button>
+    <button  mat-raised-button color="primary" type="submit" (click)="submitForm()" value="false" [disabled]="processing">SUBMIT</button>
     <mat-error class="mat-caption" *ngIf="this.permitForm.invalid && this.submitTouched">
       Please review the errors above, some fields are required or not entered correctly
     </mat-error>        

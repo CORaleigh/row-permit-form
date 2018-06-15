@@ -38,7 +38,7 @@ export class PermitFormComponent implements OnInit {
   @ViewChild('resetButton') resetButton: MatButton;
 
   @ViewChild(EsriMapComponent) map;
-
+  public processing: boolean = false;
   public featureLayer: any;
   public file: any;
   public fields: Array < any > = [];
@@ -215,6 +215,7 @@ export class PermitFormComponent implements OnInit {
   }
   submitForm() {
     this.submitTouched = true;
+
     if (this.permitForm.valid && this.location) {
     return loadModules(['esri/Graphic'])
       .then(([Graphic]) => {
@@ -248,16 +249,20 @@ export class PermitFormComponent implements OnInit {
         graphic.attributes.FORM = 'Yes';
         graphic.attributes.ADDRESS = this.map.search.results[0].results[0].feature.attributes.Match_addr
         graphic.geometry = this.map.search.results[0].results[0].feature.geometry;
+        this.processing = true;
         let promise = this.featureLayer.applyEdits({
           addFeatures: [graphic]
         }).then(results => {
+          this.processing = false;
           if (results.addFeatureResults[0].objectId) {
             this.snackBar.open('Permit request has successfully been submitted', 'Success', {
               duration: 3000
             });
             if (this.file) {
-              let attachUrl = this.featureLayer.url + '/0/' + results.addFeatureResults[0].objectId + '/addAttachment';            
+              let attachUrl = this.featureLayer.url + '/0/' + results.addFeatureResults[0].objectId + '/addAttachment';    
+              this.processing = true;        
               this.attachment.attachFile(attachUrl, this.file).then(result => {
+                this.processing = false;
                 this.snackBar.open('File has successfully been uploaded.', 'Success', {
                   duration: 3000
                 });
