@@ -25,6 +25,9 @@ import {
   AttachmentsService
 } from '../attachments.service';
 import {
+  MailService
+} from '../mail.service';
+import {
   MatSnackBar, DateAdapter, MatButton
 } from '@angular/material';
 
@@ -73,7 +76,7 @@ export class PermitFormComponent implements OnInit {
 'SIGNED_DATE'];
   public permitForm: FormGroup;
 
-  constructor(public fb: FormBuilder, public attachment: AttachmentsService, public snackBar: MatSnackBar) {
+  constructor(public fb: FormBuilder, public attachment: AttachmentsService, public mail: MailService, public snackBar: MatSnackBar) {
     this.buildForm();
   }
 
@@ -258,6 +261,7 @@ export class PermitFormComponent implements OnInit {
             this.snackBar.open('Permit request has successfully been submitted', 'Success', {
               duration: 3000
             });
+            this.mail.sendMail(results.addFeatureResults[0].objectId);
             if (this.file) {
               let attachUrl = this.featureLayer.url + '/0/' + results.addFeatureResults[0].objectId + '/addAttachment';    
               this.processing = true;        
