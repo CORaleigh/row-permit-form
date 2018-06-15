@@ -257,6 +257,7 @@ export class PermitFormComponent implements OnInit {
           addFeatures: [graphic]
         }).then(results => {
           this.processing = false;
+          
           if (results.addFeatureResults[0].objectId) {
             this.snackBar.open('Permit request has successfully been submitted', 'Success', {
               duration: 3000
