@@ -21,7 +21,7 @@ export class MailService {
       worktype = attributes.WORK_TYPE_OTHER;
     }
     let address = attributes.ADDRESS;
-    let message = "A right-of-way permit has been submitted by " + company + " requesting to perform " + worktype + " at " + address + ".  Permit can be viewed at approved here: https://ral.maps.arcgis.com/apps/webappviewer/index.html?id=2afdc9aa67934314842da1223263dfe0&query=Right_of_Way_Permit_Approval_8756%2COBJECTID%2C" + oid 
+    let message = "A right-of-way permit has been submitted by " + company + " requesting to perform " + worktype + " at " + address + ".  Permit can be viewed and approved here: https://ral.maps.arcgis.com/apps/webappviewer/index.html?id=2afdc9aa67934314842da1223263dfe0&query=Right_of_Way_Permit_Approval_8756%2COBJECTID%2C" + oid 
     let formData: FormData = new FormData();
     formData.append('fromEmail', 'RightofWayServices@raleighnc.gov');
     formData.append('toEmail', 'gis@raleighnc.gov,RightofWayServices@raleighnc.gov');
